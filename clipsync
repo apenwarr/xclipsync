@@ -1,0 +1,14 @@
+#!/bin/sh
+cd "$(dirname "$0")"
+
+if [ -z "$DISPLAY" ]; then
+    echo 'clipsync: $DISPLAY must be set.' >&2
+    exit 99
+fi
+
+MAIN=":0"
+ME="$DISPLAY"
+while :; do
+    DISPLAY=$MAIN ./clipfrom "$ME"   || exit 1
+    DISPLAY=$ME   ./clipfrom "$MAIN" || exit 1
+done
