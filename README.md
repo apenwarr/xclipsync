@@ -1,4 +1,4 @@
-== xclipsync ==
+# xclipsync
 
 xclipsync is a trivial little script for synchronizing the X11 "clipboard"
 selection (the one you use with Ctrl-C/Ctrl-V, as opposed to
@@ -22,7 +22,7 @@ retrieve the clipboard data from the remote screen only at paste time, which
 is what xclipsync does.
 
 
-=== How do I use it? ===
+## How do I use it?
 
 First, install tcl/tk (yes!  In 2018!) and xclip.  Then just put something
 like this in your .xsession:
@@ -36,7 +36,7 @@ You can create any number of X servers synced this way, and they will all
 sync smoothly with :0 and therefore with each other.
 
 
-== How does it work? ===
+## How does it work?
 
 xclipsync is a shell script that just alternates between two steps:
 
@@ -65,7 +65,7 @@ instantaneous but doesn't waste time polling when you're not using the
 clipboard.
 
 
-== Room for improvement ==
+## Room for improvement
 
 This set of scripts really sucks!  There's plenty of room to improve. 
 Patches are welcome.  Suggestions:
