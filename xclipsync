@@ -9,6 +9,6 @@ fi
 MAIN=":0"
 ME="$DISPLAY"
 while :; do
-    DISPLAY=$MAIN ./clipfrom "$ME"   || exit 1
-    DISPLAY=$ME   ./clipfrom "$MAIN" || exit 1
+    DISPLAY=$MAIN ./xclipfrom "$ME"   || exit 1
+    DISPLAY=$ME   ./xclipfrom "$MAIN" || exit 1
 done
