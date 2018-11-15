@@ -1,21 +1,38 @@
 #!/usr/bin/wish
+
+# We don't need a visible window.
 wm withdraw .
 
 set otherDisplay [lindex $argv 0]
 puts "proxying CLIPBOARD from $otherDisplay"
 
+# This gets called when another process tries to paste from our selection.
 proc handleSelection {offset maxChars} {
     global otherDisplay
     puts "CLIPBOARD data requested"
     variable result
+    # Grab the current clipboard contents from the *other* display.
+    # I would rather do this without fork/execing a subprocess, but I
+    # couldn't find a way to make tcl/tk talk to two X11 servers at once.
     catch {exec xclip -display $otherDisplay -selection CLIPBOARD -o} result
     return $result
 }
 
+# This gets called when we lose ownership of the clipboard, which generally
+# means someone cut/copy something on the current display.  We don't want
+# to override that, so we exit and leave them alone.  xclipsync can start
+# another copy of xclipfrom going in the other direction, from the newly-
+# copied data on this display to the now-obsolete clipboard on the other
+# display.
 proc lostSelection {} {
     puts "lost selection\n"
     exit 0
 }
 
+# If we get asked for clipboard data, this is what we provide.
 selection handle -selection CLIPBOARD . handleSelection
+
+# Take ownership of the clipboard, so it someone wants to paste, they
+# come to us first.  We get called if someone else subsequently takes
+# ownership.
 selection own -selection CLIPBOARD -command lostSelection .

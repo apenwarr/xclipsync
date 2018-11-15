@@ -1,4 +1,6 @@
 #!/bin/sh
+# The related xclipfrom tool is presumably installed in the same directory
+# as this script.
 cd "$(dirname "$0")"
 
 if [ -z "$DISPLAY" ]; then
@@ -9,6 +11,29 @@ fi
 MAIN=":0"
 ME="$DISPLAY"
 while :; do
+    # This seems almost too easy, but it's exactly what we want.
+    # Pick two displays, A and B.  We always want to be proxying the
+    # clipboard from A to B or B to A.  Whichever display is the one
+    # someone has cut/copied to most recently is the one that "owns" the
+    # clipboard; that means we want to run our proxy on the *other* one,
+    # so when someone wants to paste there, we request it from the owner.
+    #
+    # If someone does additional cut/copies on the display that already
+    # owns the clipboard, we don't need to do anything, because xclipfrom
+    # will always proxy the latest clipboard data from that display.  Only
+    # when someone cuts/copies on the *other* display do we need to switch
+    # it around.
+    #
+    # Interestingly, this two-step alternating sequence works fine no matter
+    # how many pairs of displays we run it on.  An action only takes place
+    # in any of the xclipsync instances if that instance's current xclipfrom
+    # *loses* control of the clipboard on a given display.  And by definition,
+    # any given cut/copy operation can only take control of a single clipboard,
+    # which was controlled by a single xclipsync->xclipfrom.
+    #
+    # That said, sync loops (like syncing A<->A or {A-B, B-C, C-A}) will
+    # cause problems.  Don't do that.  The safest topology is a tree, eg.
+    # everybody syncing from their display to :0.
     DISPLAY=$MAIN ./xclipfrom "$ME"   || exit 1
     DISPLAY=$ME   ./xclipfrom "$MAIN" || exit 1
 done
