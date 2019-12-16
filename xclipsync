@@ -10,6 +10,13 @@ fi
 
 MAIN=":0"
 ME="$DISPLAY"
+
+# Sync immediately on startup, otherwise the first time we paste we will paste
+# the error string "Error: target STRING not available", and trash the original
+# clipboard contents.
+xclip -display "$MAIN" -selection CLIPBOARD -o |
+  xclip -display "$ME" -selection CLIPBOARD -i
+
 while :; do
     # This seems almost too easy, but it's exactly what we want.
     # Pick two displays, A and B.  We always want to be proxying the
