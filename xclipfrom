@@ -14,7 +14,7 @@ proc handleSelection {offset maxChars} {
     # Grab the current clipboard contents from the *other* display.
     # I would rather do this without fork/execing a subprocess, but I
     # couldn't find a way to make tcl/tk talk to two X11 servers at once.
-    catch {exec xclip -display $otherDisplay -selection CLIPBOARD -o} result
+    catch {exec -keepnewline xclip -display $otherDisplay -selection CLIPBOARD -o} result
     return $result
 }
 
